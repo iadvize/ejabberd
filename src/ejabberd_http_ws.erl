@@ -54,6 +54,7 @@
          input = []                   :: list(),
 	 active = false               :: boolean(),
 	 c2s_pid                      :: pid(),
+         max_stanza_size              :: non_neg_integer(),
          ws                           :: {#ws{}, pid()},
          rfc_compilant = undefined    :: boolean() | undefined}).
 
@@ -126,6 +127,7 @@ socket_handoff(LocalPath, Request, Opts) ->
 init([{#ws{ip = IP, http_opts = HOpts}, _} = WS]) ->
     SOpts = lists:filtermap(fun({stream_management, _}) -> true;
                                ({max_ack_queue, _}) -> true;
+                               ({max_stanza_size, _}) -> true;
                                ({ack_timeout, _}) -> true;
                                ({resume_timeout, _}) -> true;
                                ({max_resume_timeout, _}) -> true;
@@ -336,6 +338,17 @@ parse(#state{rfc_compilant = C} = State, Data) ->
                     parse(State#state{rfc_compilant = false}, Data)
             end;
         true ->
+        Opts = ejabberd_c2s_config:get_c2s_limits(),
+        MaxStanzaSize = case lists:keysearch(max_stanza_size, 1,
+                                             Opts)
+                        of
+                          {value, {_, Size}} -> Size;
+                          _ -> infinity
+                        end,
+        PayloadSize = iolist_size(Data),
+        if PayloadSize > MaxStanzaSize ->
+             close(State);
+             true ->
             El = fxml_stream:parse_element(Data),
             case El of
                 #xmlel{name = <<"open">>, attrs = Attrs} ->
@@ -348,7 +361,8 @@ parse(#state{rfc_compilant = C} = State, Data) ->
                     {State, <<"parse error">>};
                 _ ->
                     {State, [El]}
-            end;
+            end
+        end;
         false ->
             {State, Data}
     end.
