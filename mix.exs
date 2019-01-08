@@ -91,11 +91,13 @@ defmodule Ejabberd.Mixfile do
   end
 
   defp deps_include(deps) do
+    is_umbrella = Mix.Project.umbrella?()
+
     base = case Mix.Project.deps_paths()[:ejabberd] do
-      nil -> "deps"
-      _ -> ".."
+      nil -> (if is_umbrella, do: "../../", else: "") <> "deps"
+              _ -> ".." <> (if is_umbrella, do: "/../", else: "")
     end
-    Enum.map(deps, fn dep -> base<>"/#{dep}/include" end)
+    Enum.map(deps, fn dep -> base <>"/#{dep}/include" end)
   end
 
   defp cond_deps do
