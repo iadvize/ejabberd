@@ -142,8 +142,9 @@ start(Host, Opts) ->
 	    end,
 	    case mod_mam_opt:clear_archive_on_room_destroy(Opts) of
 		true ->
-		    ejabberd_hooks:add(remove_room, Host, ?MODULE,
-				       remove_room, 50);
+		    % ejabberd_hooks:add(remove_room, Host, ?MODULE,
+				       % remove_room, 50);
+		  ok;
 		false ->
 		    ejabberd_hooks:add(check_create_room, Host, ?MODULE,
 				       check_create_room, 50)
