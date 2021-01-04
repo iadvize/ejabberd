@@ -327,6 +327,9 @@ set_presence(SID, User, Server, Resource, Priority, Presence) ->
 	    case lists:keyfind(SID, #session.sid, Ss) of
 		#session{info = Info} ->
 		    set_session(SID, User, Server, Resource, Priority, Info),
+		    ejabberd_hooks:run(set_presence_hook_v2,
+				       LServer,
+				       [User, Server, Resource, Presence, SID]),
 		    ejabberd_hooks:run(set_presence_hook,
 				       LServer,
 				       [User, Server, Resource, Presence]);
@@ -349,6 +352,9 @@ unset_presence(SID, User, Server, Resource, Status) ->
 	    case lists:keyfind(SID, #session.sid, Ss) of
 		#session{info = Info} ->
 		    set_session(SID, User, Server, Resource, undefined,	Info),
+		    ejabberd_hooks:run(unset_presence_hook_v2,
+				       LServer,
+				       [User, Server, Resource, Presence, SID]),
 		    ejabberd_hooks:run(unset_presence_hook,
 				       LServer,
 				       [User, Server, Resource, Status]);
@@ -362,8 +368,11 @@ unset_presence(SID, User, Server, Resource, Status) ->
 
 close_session_unset_presence(SID, User, Server,
 			     Resource, Status) ->
-    close_session(SID, User, Server, Resource),
-    ejabberd_hooks:run(unset_presence_hook,
+  close_session(SID, User, Server, Resource),
+  ejabberd_hooks:run(unset_presence_hook_v2,
+		     LServer,
+		     [User, Server, Resource, Presence, SID]),
+  ejabberd_hooks:run(unset_presence_hook,
 		       jid:nameprep(Server),
 		       [User, Server, Resource, Status]).
 
