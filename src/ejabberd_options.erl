@@ -83,6 +83,8 @@ opt_type(auth_scram_hash) ->
     econf:enum([sha, sha256, sha512]);
 opt_type(auth_use_cache) ->
     econf:bool();
+opt_type(auth_profile_opts) ->
+    econf:any();
 opt_type(c2s_cafile) ->
     econf:file();
 opt_type(c2s_ciphers) ->
@@ -498,6 +500,7 @@ options() ->
      {queue_type, ram},
      {version, ejabberd_config:version()},
      %% Other options
+     {auth_profile_opts, []},
      {acl, []},
      {access_rules, []},
      {acme, #{}},
