@@ -825,10 +825,10 @@ load_room(RMod, Host, ServerHost, Room) ->
 	Opts0 ->
 	    case proplists:get_bool(persistent, Opts0) of
 		true ->
-		    ?DEBUG("Restore room: ~ts", [Room]),
+		    ?WARNING_MSG("Restore room: ~ts", [Room]),
 		    start_room(RMod, Host, ServerHost, Room, Opts0);
 		_ ->
-		    ?DEBUG("Restore hibernated non-persistent room: ~ts", [Room]),
+		    ?WARNING_MSG("Restore hibernated non-persistent room: ~ts", [Room]),
 		    Res = start_room(RMod, Host, ServerHost, Room, Opts0),
 		    Mod = gen_mod:db_mod(ServerHost, mod_muc),
 		    case erlang:function_exported(Mod, get_subscribed_rooms, 3) of
@@ -842,7 +842,7 @@ load_room(RMod, Host, ServerHost, Room) ->
     end.
 
 start_new_room(RMod, Host, ServerHost, Room, Pass, From, Nick) ->
-    ?DEBUG("Open new room: ~ts", [Room]),
+    ?WARNING_MSG("Open new room: ~ts", [Room]),
     DefRoomOpts = mod_muc_opt:default_room_options(ServerHost),
     DefRoomOpts2 = add_password_options(Pass, DefRoomOpts),
     start_room(RMod, Host, ServerHost, Room, DefRoomOpts2, From, Nick).

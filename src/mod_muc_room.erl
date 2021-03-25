@@ -278,7 +278,7 @@ init([Host, ServerHost, Access, Room, HistorySize,
 		   room_shaper = Shaper}),
     State1 = set_opts(DefRoomOpts, State),
     store_room(State1),
-    ?INFO_MSG("Created MUC room ~ts@~ts by ~ts",
+    ?WARNING_MSG("Created MUC room ~ts@~ts by ~ts",
 	      [Room, Host, jid:encode(Creator)]),
     add_to_log(room_existence, created, State1),
     add_to_log(room_existence, started, State1),
@@ -628,7 +628,7 @@ normal_state(hibernate, StateData) ->
     case maps:size(StateData#state.users) of
 	0 ->
 	    store_room_no_checks(StateData, []),
-	    ?INFO_MSG("Hibernating room ~ts@~ts", [StateData#state.room, StateData#state.host]),
+	    ?WARNING_MSG("Hibernating room ~ts@~ts", [StateData#state.room, StateData#state.host]),
 	    {stop, normal, StateData#state{hibernate_timer = hibernating}};
 	_ ->
 	    {next_state, normal_state, StateData}
