@@ -40,7 +40,21 @@ init(Opts) ->
 
 %% @private
 handle_event({log, LagerMsg}, State) ->
-    #{mode := Mode, truncate := Truncate, level := MinLevel, utc_log := UTCLog} =  'Elixir.Logger.Config':'__data__'(),
+    Truncate = case 'Elixir.Application':fetch_env(logger, truncate) of
+                   {ok, ElixirTruncate} -> ElixirTruncate;
+                   _ -> 8192
+               end,
+
+    UTCLog = case 'Elixir.Application':fetch_env(logger, utc_log) of
+                 {ok, ElixirUTCLog} -> ElixirUTCLog;
+                 _ -> false
+             end,
+
+    MinLevel = case 'Elixir.Application':fetch_env(logger, level) of
+                 {ok, ElixirLevel} -> ElixirLevel;
+                 _ -> false
+             end,
+
     MsgLevel = severity_to_level(lager_msg:severity(LagerMsg)),
     case {lager_util:is_loggable(LagerMsg, lager_util:level_to_num(State#state.level), ?MODULE),
           'Elixir.Logger':compare_levels(MsgLevel, MinLevel)} of
@@ -55,7 +69,7 @@ handle_event({log, LagerMsg}, State) ->
                                   erlang:process_info(self(), group_leader);
                               _ -> {group_leader, self()}
                           end,
-            notify(Mode, {MsgLevel, GroupLeader, {'Elixir.Logger', Message, Timestamp, Metadata}}),
+            notify(async, {MsgLevel, GroupLeader, {'Elixir.Logger', Message, Timestamp, Metadata}}),
             {ok, State};
         _ ->
             {ok, State}
