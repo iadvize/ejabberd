@@ -4654,7 +4654,7 @@ send_subscriptions_change_notifications(From, Nick, Type, State) ->
 			id = p1_rand:get_string(),
 			sub_els = [Payload1]}]}}]},
 	ejabberd_router_multicast:route_multicast(State#state.jid, State#state.server_host,
-						  WJ, Packet1, true);
+						  WJ, Packet1, false);
 	true -> ok
     end,
     if WN /= [] ->
@@ -4670,7 +4670,7 @@ send_subscriptions_change_notifications(From, Nick, Type, State) ->
 			id = p1_rand:get_string(),
 			sub_els = [Payload2]}]}}]},
 	ejabberd_router_multicast:route_multicast(State#state.jid, State#state.server_host,
-					       WN, Packet2, true);
+					       WN, Packet2, false);
 	true -> ok
     end.
 
