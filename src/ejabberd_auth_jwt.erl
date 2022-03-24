@@ -85,7 +85,12 @@ check_password(User, AuthzId, Server, Token) ->
             end
     end.
 
-user_exists(_User, _Host) -> {nocache, false}.
+user_exists(User, Host) ->
+  {nocache, case ejabberd_sm:get_user_info(User, Host) of
+              [{_, Info}] -> proplists:get_value(auth_module, Info) == ejabberd_auth_jwt;
+              _ -> false
+            end}.
+
 
 use_cache(_) ->
     false.
