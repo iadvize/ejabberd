@@ -1732,9 +1732,10 @@ set_role(JID, Role, StateData) ->
 	end,
     Roles = case Role of
                 %% Don't persist 'none' role: if someone is kicked, they will
-                %% maintain the same role they had *before* they were kicked
+                %% maintain the same role they had *before* they were kicked,
+                %% unless they were banned
                 none ->
-                    StateData#state.roles;
+		    maps:remove(jid:remove_resource(LJID), StateData#state.roles);
                 NewRole ->
                     maps:put(jid:remove_resource(LJID),
                              NewRole,
