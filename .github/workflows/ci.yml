@@ -35,7 +35,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
     - name: Test shell scripts
       if: matrix.otp == '26'
@@ -46,7 +46,7 @@ jobs:
         shellcheck -x ejabberdctl.template
 
     - name: Get specific Erlang/OTP
-      uses: erlef/setup-beam@v1
+      uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
       with:
         otp-version: ${{ matrix.otp }}
 
@@ -101,7 +101,7 @@ jobs:
       run: sed -i 's|, syntax_tools||g' src/ejabberd.app.src.script
 
     - name: Cache rebar
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: |
           ~/.cache/rebar3/
@@ -202,7 +202,7 @@ jobs:
 
     - name: Upload test logs
       if: always() && steps.ct.outcome == 'failure' && github.repository == 'processone/ejabberd'
-      uses: peaceiris/actions-gh-pages@v4
+      uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
       with:
         publish_dir: _build/test
         exclude_assets: '.github,lib,plugins'
@@ -217,7 +217,7 @@ jobs:
         echo "::notice::View CT results: https://processone.github.io/ecil/logs/$CTRUN/"
 
     - name: Check for changes to trigger schema upgrade test
-      uses: dorny/paths-filter@v3
+      uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
       id: filter
       with:
         filters: |
@@ -296,7 +296,7 @@ jobs:
 
     - name: Upload CT logs
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: ejabberd-ct-logs-${{matrix.otp}}
         #
